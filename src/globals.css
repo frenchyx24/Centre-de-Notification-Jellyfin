@@ -575,15 +575,16 @@ a:contains("not you") {
 /* Cibler UNIQUEMENT les pages avec classe pf-c-login (page de connexion) */
 .pf-c-login .pf-c-page,
 body:has(.pf-c-login) .pf-c-page {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    /* Utilisation d'un fond sombre uni pour correspondre au style néon */
+    background: #0A0A1A !important; 
     background-attachment: fixed !important;
 }
 
 /* Alternative avec un arrière-plan plus naturel UNIQUEMENT sur page de login */
 .pf-c-login .pf-c-background-image,
 body:has(.pf-c-login) .pf-c-background-image {
-    /* Suppression du GIF et du bruit SVG pour éviter les stries */
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(118, 75, 162, 0.6) 100%) !important;
+    /* Suppression de tous les arrière-plans complexes */
+    background: none !important;
     background-size: cover !important;
 }
 
@@ -1704,6 +1705,6 @@ textarea.pf-c-form-control {
 
 
 .ak-login-container {
-   /* Ajustement de la marge négative pour centrer verticalement */
-   margin-top: -100px !important; 
+   /* Réinitialisation de la marge négative pour un centrage par défaut */
+   margin-top: 0 !important; 
 }
