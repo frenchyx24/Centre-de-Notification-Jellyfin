@@ -611,38 +611,12 @@ body:has(.pf-c-login) .pf-c-background-image {
     margin-top: 10px !important;
 }
 
-/* Effet noise CSS pur pour donner de la texture réaliste */
+/* Effet noise CSS pur pour donner de la texture réaliste (SUPPRIMÉ) */
 .pf-c-login .pf-c-login__container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 11% 15%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-        radial-gradient(circle at 23% 35%, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-        radial-gradient(circle at 45% 25%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-        radial-gradient(circle at 67% 45%, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-        radial-gradient(circle at 89% 65%, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-        radial-gradient(circle at 12% 75%, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-        radial-gradient(circle at 34% 85%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-        radial-gradient(circle at 56% 95%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-        radial-gradient(circle at 78% 15%, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-        radial-gradient(circle at 90% 35%, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-        radial-gradient(circle at 25% 55%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-        radial-gradient(circle at 47% 75%, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-    background-size: 
-        8px 8px, 12px 12px, 10px 10px, 14px 14px, 
-        9px 9px, 11px 11px, 13px 13px, 15px 15px,
-        7px 7px, 16px 16px, 6px 6px, 18px 18px;
-    border-radius: 24px;
-    z-index: 1;
-    pointer-events: none;
-    opacity: 0.6;
+    content: none !important; /* Suppression du premier layer de bruit */
 }
 
-/* Ajouter un deuxième layer de noise plus fin */
+/* Ajouter un deuxième layer de noise plus fin (SUPPRIMÉ) */
 .pf-c-login .pf-c-login__container::after {
     content: '';
     position: absolute;
@@ -650,6 +624,7 @@ body:has(.pf-c-login) .pf-c-background-image {
     left: 0;
     right: 0;
     bottom: 0;
+    /* Remplacement par un bruit plus simple ou suppression totale si le bruit SVG est suffisant */
     background: 
         radial-gradient(circle at 33% 22%, rgba(255, 255, 255, 0.03) 0.5px, transparent 0.5px),
         radial-gradient(circle at 66% 44%, rgba(255, 255, 255, 0.04) 0.5px, transparent 0.5px),
@@ -661,7 +636,7 @@ body:has(.pf-c-login) .pf-c-background-image {
     border-radius: 24px;
     z-index: 2;
     pointer-events: none;
-    opacity: 0.8;
+    opacity: 0.0; /* Rendre invisible pour tester si le problème vient de là */
 }
 
 /* Cibler spécifiquement les éléments de la page de connexion */
@@ -1098,6 +1073,7 @@ body:has(.pf-c-login) .pf-c-button.pf-m-link:hover {
     pointer-events: none;
     z-index: -1;
     border-radius: 32px;
+    opacity: 0.0; /* Rendre invisible pour éviter les stries */
 }
 
 /* Responsive UNIQUEMENT sur page de login */
@@ -1749,5 +1725,6 @@ textarea.pf-c-form-control {
 
 
 .ak-login-container {
-   margin-top: -110px !important;
+   /* Réduction de la marge négative pour centrer verticalement */
+   margin-top: -50px !important; 
 }
