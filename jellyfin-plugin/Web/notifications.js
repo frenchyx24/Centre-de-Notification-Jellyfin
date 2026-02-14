@@ -1,5 +1,6 @@
 (function() {
-    // Le plugin injectera ces variables dynamiquement depuis la config Jellyfin
+    // Ces variables seront remplacées par le plugin C# lors de l'injection
+    // ou récupérées via l'API Jellyfin si injectées manuellement.
     let config = {
         gistId: "${GistId}",
         token: "${GitHubToken}",
@@ -131,12 +132,6 @@
         }
         document.body.appendChild(panel);
         
-        if (!document.getElementById('notif-anim')) {
-            const s = document.createElement('style'); s.id='notif-anim';
-            s.innerHTML='@keyframes notifSlideIn { from { opacity:0; transform:translateY(-8px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }';
-            document.head.appendChild(s);
-        }
-
         setTimeout(() => {
             document.addEventListener('click', function close(e) {
                 const p = document.getElementById('notif-panel-overlay');
@@ -161,11 +156,74 @@
     }
 
     function openAdminModal() {
-        // Logique de la modale admin (identique à votre script original mais utilisant config.token)
-        // ... (Code de la modale ici)
+        const modal = document.createElement('div');
+        modal.id = 'admin-notif-modal';
+        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:#101010; z-index:9999999; overflow-y:auto; padding:40px; box-sizing:border-box; font-family: sans-serif;';
+        
+        modal.innerHTML = `
+            <div style="max-width:800px; margin:0 auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom:1px solid #333; padding-bottom:20px;">
+                    <h1 style="margin:0; color:#fff;">📢 Admin Notifications</h1>
+                    <button onclick="document.getElementById('admin-notif-modal').remove()" style="background:#333; border:none; color:white; padding:10px 20px; border-radius:4px; cursor:pointer;">FERMER</button>
+                </div>
+                <div style="background:#1e1e1e; padding:20px; border-radius:8px; margin-bottom:20px;">
+                    <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input id="adm-titre" placeholder="Titre" style="padding:10px; background:#2c2c2c; border:1px solid #444; color:white;">
+                        <input id="adm-date" placeholder="Date" style="padding:10px; background:#2c2c2c; border:1px solid #444; color:white;">
+                        <select id="adm-type" style="padding:10px; background:#2c2c2c; border:1px solid #444; color:white;">
+                            <option value="info">Bleu (Info)</option>
+                            <option value="alert">Rouge (Urgent)</option>
+                            <option value="success">Vert (Succès)</option>
+                            <option value="warning">Orange (Attention)</option>
+                        </select>
+                    </div>
+                    <textarea id="adm-texte" placeholder="Message..." style="width:100%; height:80px; padding:10px; background:#2c2c2c; border:1px solid #444; color:white; margin-bottom:10px; box-sizing:border-box;"></textarea>
+                    <button id="adm-add-btn" style="background:#2ecc71; color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:bold;">AJOUTER</button>
+                </div>
+                <div style="background:#1e1e1e; padding:20px; border-radius:8px;"><div id="adm-list">Chargement...</div></div>
+                <button id="adm-save-btn" style="width:100%; margin-top:20px; background:#3498db; color:white; padding:15px; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer;">💾 SAUVEGARDER</button>
+                <p id="adm-status" style="text-align:center; color:#888; margin-top:10px;"></p>
+            </div>`;
+        document.body.appendChild(modal);
+
+        let adminMsgs = JSON.parse(JSON.stringify(currentConfig.messages || []));
+        
+        const renderList = () => {
+            const list = document.getElementById('adm-list');
+            list.innerHTML = adminMsgs.length ? '' : '<div style="color:#777;text-align:center;">Aucun message</div>';
+            adminMsgs.forEach((m, i) => {
+                const item = document.createElement('div');
+                item.style.cssText = 'background:#2b2b2b; padding:10px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid #3498db;';
+                item.innerHTML = `<div style="color:#ddd;"><strong>${m.titre}</strong> - ${m.texte}</div><button onclick="this.parentElement.remove();" style="background:transparent; border:none; cursor:pointer;">🗑️</button>`;
+                item.querySelector('button').onclick = () => { adminMsgs.splice(i, 1); renderList(); };
+                list.appendChild(item);
+            });
+        };
+
+        document.getElementById('adm-add-btn').onclick = () => {
+            adminMsgs.unshift({
+                titre: document.getElementById('adm-titre').value,
+                date: document.getElementById('adm-date').value,
+                texte: document.getElementById('adm-texte').value,
+                type: document.getElementById('adm-type').value
+            });
+            renderList();
+        };
+
+        document.getElementById('adm-save-btn').onclick = () => {
+            const status = document.getElementById('adm-status');
+            status.innerText = "Sauvegarde...";
+            fetch(API_URL, {
+                method: 'PATCH',
+                headers: { 'Authorization': `token ${config.token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ files: { [config.fileName]: { content: JSON.stringify({ ...currentConfig, messages: adminMsgs }, null, 2) } } })
+            }).then(() => { status.innerText = "✅ Succès !"; loadNotifications(); })
+              .catch(() => status.innerText = "❌ Erreur");
+        };
+
+        renderList();
     }
 
-    // Initialisation
     loadNotifications();
     setInterval(loadNotifications, 10000); 
     setInterval(checkInterface, 2000);   
