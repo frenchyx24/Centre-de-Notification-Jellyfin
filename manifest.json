@@ -5,7 +5,7 @@
     "description": "Affiche des notifications personnalisées via GitHub Gist.",
     "overview": "Ce plugin permet d'injecter un système de notifications dans l'interface Jellyfin, gérable via un Gist GitHub.",
     "owner": "frenchyx24",
-    "category": "UI",
+    "category": "General",
     "versions": [
       {
         "version": "1.0.0.0",
