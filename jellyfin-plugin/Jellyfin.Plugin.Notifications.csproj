@@ -3,16 +3,20 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AnalysisLevel>latest</AnalysisLevel>
     <AssemblyName>Jellyfin.Plugin.Notifications</AssemblyName>
-    <RootNamespace>Jellyfin.Plugin.Notifications</RootNamespace>
+    <PackageId>Jellyfin.Plugin.Notifications</PackageId>
+    <Version>1.0.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jellyfin.Controller" Version="10.8.0" />
-    <PackageReference Include="Jellyfin.Model" Version="10.8.0" />
+    <PackageReference Include="Jellyfin.Controller" Version="10.10.0" />
+    <PackageReference Include="Jellyfin.Model" Version="10.10.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Web\**\*" />
+    <EmbeddedResource Include="Web/config.html" />
+    <EmbeddedResource Include="Web/config.js" />
+    <EmbeddedResource Include="Web/notifications.js" />
   </ItemGroup>
 </Project>

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Jellyfin.Plugin.Notifications.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
-using Jellyfin.Plugin.Notifications.Configuration;
+using MediaBrowser.Controller.Plugins;
 
 namespace Jellyfin.Plugin.Notifications
 {
@@ -19,7 +20,7 @@ namespace Jellyfin.Plugin.Notifications
             Instance = this;
         }
 
-        public static Plugin Instance { get; private set; }
+        public static Plugin? Instance { get; private set; }
 
         public IEnumerable<PluginPageInfo> GetPages()
         {
@@ -27,8 +28,13 @@ namespace Jellyfin.Plugin.Notifications
             {
                 new PluginPageInfo
                 {
-                    Name = "CustomNotifications",
+                    Name = "CustomNotificationsConfig",
                     EmbeddedResourcePath = GetType().Namespace + ".Web.config.html"
+                },
+                new PluginPageInfo
+                {
+                    Name = "CustomNotificationsJs",
+                    EmbeddedResourcePath = GetType().Namespace + ".Web.config.js"
                 }
             };
         }
