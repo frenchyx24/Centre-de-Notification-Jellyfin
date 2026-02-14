@@ -1,21 +1,33 @@
 (function() {
-    // Ces variables seront remplacées par le plugin C# lors de l'injection
-    // ou récupérées via l'API Jellyfin si injectées manuellement.
-    let config = {
-        gistId: "${GistId}",
-        token: "${GitHubToken}",
-        fileName: "${GistFileName}",
-        menuTitle: "${MenuTitle}"
-    };
-
-    const RAW_URL = `https://gist.githubusercontent.com/frenchyx24/${config.gistId}/raw/${config.fileName}`;
-    const API_URL = `https://api.github.com/gists/${config.gistId}`;
+    const pluginId = "84fc7778-9479-e57b-f25b-6013b89770c3";
     const READ_KEY = 'jellyfin_last_read_message_date'; 
+    
+    let config = {
+        GistId: "",
+        GitHubToken: "",
+        GistFileName: "notifications.json",
+        MenuTitle: "Notifications"
+    };
     
     let currentConfig = { messages: [] };
 
+    function init() {
+        // Récupération de la config via l'API Jellyfin
+        if (typeof ApiClient !== 'undefined') {
+            ApiClient.getPluginConfiguration(pluginId).then(function (savedConfig) {
+                config = { ...config, ...savedConfig };
+                if (config.GistId) {
+                    loadNotifications();
+                    setInterval(loadNotifications, 30000); // Toutes les 30s
+                    setInterval(checkInterface, 2000);
+                }
+            });
+        }
+    }
+
     function loadNotifications() {
-        fetch(RAW_URL + '?t=' + Date.now())
+        const rawUrl = `https://gist.githubusercontent.com/frenchyx24/${config.GistId}/raw/${config.GistFileName}?t=${Date.now()}`;
+        fetch(rawUrl)
             .then(res => res.json())
             .then(data => {
                 if (JSON.stringify(data) !== JSON.stringify(currentConfig)) {
@@ -23,7 +35,7 @@
                     updateInterface();
                 }
             })
-            .catch(err => console.log("Notifications: Attente réseau..."));
+            .catch(err => console.log("Notifications: Erreur de chargement Gist"));
     }
 
     function checkInterface() {
@@ -32,6 +44,7 @@
         if (header && !btn) createButton(header);
         if (btn) updateSmartBadge(btn);
 
+        // Injection du bouton admin uniquement sur le dashboard
         if (window.location.href.indexOf('dashboard') !== -1) {
             injectAdminControls();
         } else {
@@ -98,11 +111,11 @@
         
         const panel = document.createElement('div');
         panel.id = 'notif-panel-overlay';
-        panel.style.cssText = 'position: fixed; top: 60px; right: 20px; width: 340px; background: rgba(30, 30, 30, 0.98); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); z-index: 9999999; font-family: sans-serif; color: #eee; overflow: hidden; animation: notifSlideIn 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);';
+        panel.style.cssText = 'position: fixed; top: 60px; right: 20px; width: 340px; background: rgba(30, 30, 30, 0.98); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); z-index: 9999999; font-family: sans-serif; color: #eee; overflow: hidden;';
         
         panel.innerHTML = `
-            <div style="padding: 16px 20px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 700; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; color: #aaa; display: flex; justify-content: space-between; align-items: center;">
-                <span>${currentConfig.titreMenu || config.menuTitle}</span>
+            <div style="padding: 16px 20px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 700; font-size: 14px; color: #aaa; display: flex; justify-content: space-between; align-items: center;">
+                <span>${config.MenuTitle}</span>
                 <span style="cursor:pointer;opacity:0.5;font-size:18px;" onclick="document.getElementById('notif-panel-overlay').remove()">×</span>
             </div>
             <div id="notif-list-container" style="max-height: 450px; overflow-y: auto; padding: 10px;"></div>
@@ -131,17 +144,6 @@
             });
         }
         document.body.appendChild(panel);
-        
-        setTimeout(() => {
-            document.addEventListener('click', function close(e) {
-                const p = document.getElementById('notif-panel-overlay');
-                const b = document.getElementById('custom-notif-btn');
-                if (p && !p.contains(e.target) && (!b || !b.contains(e.target))) {
-                    p.remove();
-                    document.removeEventListener('click', close);
-                }
-            });
-        }, 100);
     }
 
     function injectAdminControls() {
@@ -149,82 +151,11 @@
             const floatBtn = document.createElement('button');
             floatBtn.id = 'admin-float-btn';
             floatBtn.innerHTML = '🔔 Admin Notifs';
-            floatBtn.style.cssText = 'position:fixed; bottom:30px; right:30px; z-index:999999; background:#e74c3c; color:white; border:none; padding:12px 20px; border-radius:30px; font-weight:bold; cursor:pointer; box-shadow:0 5px 15px rgba(0,0,0,0.5); font-family:sans-serif;';
-            floatBtn.onclick = openAdminModal;
+            floatBtn.style.cssText = 'position:fixed; bottom:30px; right:30px; z-index:999999; background:#e74c3c; color:white; border:none; padding:12px 20px; border-radius:30px; font-weight:bold; cursor:pointer; box-shadow:0 5px 15px rgba(0,0,0,0.5);';
+            floatBtn.onclick = () => window.location.href = "configurationpage?name=NotificationsConfig";
             document.body.appendChild(floatBtn);
         }
     }
 
-    function openAdminModal() {
-        const modal = document.createElement('div');
-        modal.id = 'admin-notif-modal';
-        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:#101010; z-index:9999999; overflow-y:auto; padding:40px; box-sizing:border-box; font-family: sans-serif;';
-        
-        modal.innerHTML = `
-            <div style="max-width:800px; margin:0 auto;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom:1px solid #333; padding-bottom:20px;">
-                    <h1 style="margin:0; color:#fff;">📢 Admin Notifications</h1>
-                    <button onclick="document.getElementById('admin-notif-modal').remove()" style="background:#333; border:none; color:white; padding:10px 20px; border-radius:4px; cursor:pointer;">FERMER</button>
-                </div>
-                <div style="background:#1e1e1e; padding:20px; border-radius:8px; margin-bottom:20px;">
-                    <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px; margin-bottom:10px;">
-                        <input id="adm-titre" placeholder="Titre" style="padding:10px; background:#2c2c2c; border:1px solid #444; color:white;">
-                        <input id="adm-date" placeholder="Date" style="padding:10px; background:#2c2c2c; border:1px solid #444; color:white;">
-                        <select id="adm-type" style="padding:10px; background:#2c2c2c; border:1px solid #444; color:white;">
-                            <option value="info">Bleu (Info)</option>
-                            <option value="alert">Rouge (Urgent)</option>
-                            <option value="success">Vert (Succès)</option>
-                            <option value="warning">Orange (Attention)</option>
-                        </select>
-                    </div>
-                    <textarea id="adm-texte" placeholder="Message..." style="width:100%; height:80px; padding:10px; background:#2c2c2c; border:1px solid #444; color:white; margin-bottom:10px; box-sizing:border-box;"></textarea>
-                    <button id="adm-add-btn" style="background:#2ecc71; color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:bold;">AJOUTER</button>
-                </div>
-                <div style="background:#1e1e1e; padding:20px; border-radius:8px;"><div id="adm-list">Chargement...</div></div>
-                <button id="adm-save-btn" style="width:100%; margin-top:20px; background:#3498db; color:white; padding:15px; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer;">💾 SAUVEGARDER</button>
-                <p id="adm-status" style="text-align:center; color:#888; margin-top:10px;"></p>
-            </div>`;
-        document.body.appendChild(modal);
-
-        let adminMsgs = JSON.parse(JSON.stringify(currentConfig.messages || []));
-        
-        const renderList = () => {
-            const list = document.getElementById('adm-list');
-            list.innerHTML = adminMsgs.length ? '' : '<div style="color:#777;text-align:center;">Aucun message</div>';
-            adminMsgs.forEach((m, i) => {
-                const item = document.createElement('div');
-                item.style.cssText = 'background:#2b2b2b; padding:10px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid #3498db;';
-                item.innerHTML = `<div style="color:#ddd;"><strong>${m.titre}</strong> - ${m.texte}</div><button onclick="this.parentElement.remove();" style="background:transparent; border:none; cursor:pointer;">🗑️</button>`;
-                item.querySelector('button').onclick = () => { adminMsgs.splice(i, 1); renderList(); };
-                list.appendChild(item);
-            });
-        };
-
-        document.getElementById('adm-add-btn').onclick = () => {
-            adminMsgs.unshift({
-                titre: document.getElementById('adm-titre').value,
-                date: document.getElementById('adm-date').value,
-                texte: document.getElementById('adm-texte').value,
-                type: document.getElementById('adm-type').value
-            });
-            renderList();
-        };
-
-        document.getElementById('adm-save-btn').onclick = () => {
-            const status = document.getElementById('adm-status');
-            status.innerText = "Sauvegarde...";
-            fetch(API_URL, {
-                method: 'PATCH',
-                headers: { 'Authorization': `token ${config.token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ files: { [config.fileName]: { content: JSON.stringify({ ...currentConfig, messages: adminMsgs }, null, 2) } } })
-            }).then(() => { status.innerText = "✅ Succès !"; loadNotifications(); })
-              .catch(() => status.innerText = "❌ Erreur");
-        };
-
-        renderList();
-    }
-
-    loadNotifications();
-    setInterval(loadNotifications, 10000); 
-    setInterval(checkInterface, 2000);   
+    init();
 })();

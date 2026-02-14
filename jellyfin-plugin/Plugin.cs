@@ -30,6 +30,11 @@ namespace Jellyfin.Plugin.Notifications
                 {
                     Name = "NotificationsConfig",
                     EmbeddedResourcePath = "Jellyfin.Plugin.Notifications.Web.config.html"
+                },
+                new PluginPageInfo
+                {
+                    Name = "notificationsjs",
+                    EmbeddedResourcePath = "Jellyfin.Plugin.Notifications.Web.notifications.js"
                 }
             };
         }
