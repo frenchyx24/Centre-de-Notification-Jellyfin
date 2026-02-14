@@ -1,0 +1,28 @@
+name: Build and Release Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Build Plugin
+        run: dotnet build jellyfin-plugin/Jellyfin.Plugin.Notifications.csproj -c Release
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: jellyfin-plugin/bin/Release/net6.0/Jellyfin.Plugin.Notifications.dll
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
