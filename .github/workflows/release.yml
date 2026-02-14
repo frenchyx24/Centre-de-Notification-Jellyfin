@@ -18,7 +18,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 8.0.x
 
       - name: Restore dependencies
         run: dotnet restore jellyfin-plugin/Jellyfin.Plugin.Notifications.csproj
@@ -29,7 +29,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: jellyfin-plugin/bin/Release/net6.0/Jellyfin.Plugin.Notifications.dll
+          files: jellyfin-plugin/bin/Release/net8.0/Jellyfin.Plugin.Notifications.dll
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
