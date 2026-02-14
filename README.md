@@ -1,4 +1,4 @@
-# 🔔 Centre de notification Jellyfin / Jellyfin Notification Center
+# 🔔 Centre de Notification Jellyfin (Gist-Based)
 
 [Français](#français) | [English](#english)
 
@@ -6,50 +6,53 @@
 
 ## Français
 
-Ce plugin permet d'ajouter un système de notifications personnalisées directement dans l'interface de votre serveur Jellyfin. Les messages sont stockés sur un **GitHub Gist**, ce qui permet de les mettre à jour à distance sans toucher au serveur.
+Ce plugin transforme votre serveur Jellyfin en un canal de communication direct avec vos utilisateurs. Grâce à une intégration fluide, vous pouvez diffuser des messages, des alertes de maintenance ou des nouveautés sans jamais toucher aux fichiers de votre serveur, simplement en mettant à jour un **GitHub Gist**.
 
-### ✨ Fonctionnalités
-- **Injection d'interface** : Ajoute une icône de cloche dans la barre de navigation Jellyfin.
-- **Gestion à distance** : Les notifications sont lues depuis un fichier JSON hébergé sur GitHub Gist.
-- **Administration intégrée** : Ajoutez, modifiez ou supprimez des messages directement depuis le tableau de bord Jellyfin (nécessite un Token GitHub).
-- **Personnalisation** : Changez le titre du menu et la couleur du badge de notification.
-- **Types de messages** : Supporte différents styles (Info, Alerte, Succès, Attention).
+### ✨ Fonctionnalités Clés
+- **Injection UI Intelligente** : Ajoute une cloche de notification élégante dans la barre de navigation.
+- **Gestion à Distance** : Modifiez vos messages depuis n'importe où via GitHub Gist. Le serveur récupère les changements automatiquement.
+- **Auto-Configuration** : S'intègre automatiquement avec le plugin `JavaScript Injector` s'il est présent.
+- **Tableau de Bord Intégré** : Gérez, créez et publiez vos notifications directement depuis l'administration Jellyfin.
+- **Styles de Messages** : Supporte 4 types (Info, Alerte, Succès, Attention) avec des codes couleurs distincts.
+- **Badge de Notification** : Un badge dynamique indique le nombre de messages non lus.
+- **Support Mobile** : L'interface s'affiche parfaitement sur les applications Android et iOS (via la vue web intégrée).
 
-### 🚀 Installation
-1. Allez dans le **Tableau de bord** de votre Jellyfin.
-2. Allez dans **Plugins** > **Dépôts**.
-3. Ajoutez un nouveau dépôt avec l'URL de votre fichier `manifest.json` brut (ex: `https://raw.githubusercontent.com/votre-nom/votre-repo/main/manifest.json`).
-4. Allez dans l'onglet **Catalogue**, cherchez "Centre de notification Jellyfin" et installez-le.
-5. Redémarrez Jellyfin.
+### 🚀 Installation Rapide
+1. **Ajouter le Dépôt** : Dans Jellyfin, allez dans `Tableau de bord` > `Plugins` > `Dépôts` et ajoutez l'URL de votre `manifest.json`.
+2. **Installer** : Cherchez "Centre de notification Jellyfin" dans le catalogue et installez-le.
+3. **Redémarrer** : Redémarrez votre serveur Jellyfin.
+4. **Injection** : 
+   - Si vous avez `JavaScript Injector`, le plugin s'ajoutera tout seul.
+   - Sinon, ajoutez `<script src="/InstalledPlugins/Notifications/notificationsjs"></script>` dans votre code HTML personnalisé (Paramètres > Général).
 
 ### ⚙️ Configuration
 Dans les paramètres du plugin :
-- **Gist ID** : L'identifiant de votre Gist GitHub.
-- **GitHub Token** : Votre Personal Access Token (requis pour sauvegarder les messages depuis Jellyfin).
-- **Nom du fichier** : Le nom du fichier JSON dans votre Gist (ex: `notifications.json`).
+- **Gist ID** : L'identifiant unique de votre Gist GitHub.
+- **GitHub Token** : Votre Personal Access Token (requis pour sauvegarder depuis Jellyfin).
+- **Nom du fichier** : Par défaut `notifications.json`.
 
 ---
 
 ## English
 
-This plugin adds a custom notification system directly into your Jellyfin server's interface. Messages are stored on a **GitHub Gist**, allowing you to update them remotely without accessing your server files.
+This plugin turns your Jellyfin server into a direct communication channel with your users. Using a seamless integration, you can broadcast messages, maintenance alerts, or news without ever touching your server files, simply by updating a **GitHub Gist**.
 
-### ✨ Features
-- **UI Injection**: Adds a notification bell icon to the Jellyfin navigation bar.
-- **Remote Management**: Notifications are fetched from a JSON file hosted on GitHub Gist.
-- **Built-in Admin**: Add, edit, or delete messages directly from the Jellyfin dashboard (requires a GitHub Token).
-- **Customization**: Change the menu title and notification badge color.
-- **Message Types**: Supports multiple styles (Info, Alert, Success, Warning).
+### ✨ Key Features
+- **Smart UI Injection**: Adds a stylish notification bell to the top navigation bar.
+- **Remote Management**: Update your messages from anywhere via GitHub Gist. The server fetches changes automatically.
+- **Auto-Configuration**: Automatically integrates with the `JavaScript Injector` plugin if installed.
+- **Built-in Dashboard**: Manage, create, and publish notifications directly from the Jellyfin admin panel.
+- **Message Styles**: Supports 4 types (Info, Alert, Success, Warning) with distinct color coding.
+- **Notification Badge**: A dynamic badge shows the number of unread messages.
+- **Mobile Support**: The UI displays perfectly on Android and iOS apps (via the integrated web view).
 
-### 🚀 Installation
-1. Go to your Jellyfin **Dashboard**.
-2. Navigate to **Plugins** > **Repositories**.
-3. Add a new repository using the raw URL of your `manifest.json` (e.g., `https://raw.githubusercontent.com/your-name/your-repo/main/manifest.json`).
-4. Go to the **Catalog** tab, find "Jellyfin Notification Center" and install it.
-5. Restart Jellyfin.
+### 🚀 Quick Installation
+1. **Add Repository**: In Jellyfin, go to `Dashboard` > `Plugins` > `Repositories` and add your `manifest.json` URL.
+2. **Install**: Find "Jellyfin Notification Center" in the catalog and install it.
+3. **Restart**: Restart your Jellyfin server.
+4. **Injection**: 
+   - If you have `JavaScript Injector`, the plugin will auto-inject itself.
+   - Otherwise, add `<script src="/InstalledPlugins/Notifications/notificationsjs"></script>` to your Custom HTML code (Settings > General).
 
-### ⚙️ Configuration
-In the plugin settings:
-- **Gist ID**: Your GitHub Gist ID.
-- **GitHub Token**: Your Personal Access Token (required to save messages from within Jellyfin).
-- **File Name**: The name of the JSON file in your Gist (e.g., `notifications.json`).
+### 📱 Mobile Note
+Since Jellyfin mobile apps (Android/iOS) load the web interface, the notification bell will be visible and functional within the app. Note that these are **in-app notifications**, not native system push notifications.
