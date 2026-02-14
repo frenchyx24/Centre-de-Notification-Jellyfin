@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Configuration Notifications</title>
+</head>
+<body>
+    <div data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-button,emby-input,emby-select">
+        <div data-role="content">
+            <div class="content-primary">
+                <form class="customNotificationsConfigForm">
+                    <div class="sectionTitle">GitHub Gist Settings</div>
+                    <div class="inputContainer">
+                        <input is="emby-input" type="text" id="GistId" label="Gist ID:" />
+                        <div class="fieldDescription">L'ID de votre Gist GitHub.</div>
+                    </div>
+                    <div class="inputContainer">
+                        <input is="emby-input" type="password" id="GitHubToken" label="GitHub Personal Access Token:" />
+                        <div class="fieldDescription">Requis pour modifier les notifications depuis l'interface.</div>
+                    </div>
+                    <div class="inputContainer">
+                        <input is="emby-input" type="text" id="GistFileName" label="Nom du fichier JSON:" />
+                    </div>
+                    <div class="inputContainer">
+                        <input is="emby-input" type="text" id="MenuTitle" label="Titre du menu:" />
+                    </div>
+                    <button is="emby-button" type="submit" class="raised button-confirm block">Enregistrer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
